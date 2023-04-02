@@ -23,6 +23,7 @@ public class BeanContainer {
      * 存放所有被配置标记的目标对象的Map
      */
     private final Map<Class<?>, Object> beanMap = new ConcurrentHashMap();
+
     /**
      * 加载bean的注解列表
      */
@@ -81,7 +82,7 @@ public class BeanContainer {
             log.warn("BeanContainer has been loaded.");
             return;
         }
-        Set<Class<?>> classSet = ClassUtil.extractPackageClass(packageName);
+        Set<Class<?>> classSet = ClassUtil.extractPackageClass(packageName); // 这里借助ClassUtil类获取某个包下的类的所有大Class对象
         if (ValidationUtil.isEmpty(classSet)) {
             log.warn("extract nothing from packageName" + packageName);
             return;
@@ -89,7 +90,7 @@ public class BeanContainer {
         for (Class<?> clazz : classSet) {
             for (Class<? extends Annotation> annotation : BEAN_ANNOTATION) {
                 //如果类上面标记了定义的注解
-                if (clazz.isAnnotationPresent(annotation)) {
+                if (clazz.isAnnotationPresent(annotation)) { // 看看上面获取的那些Class对象是不是有被那些注解标注了 如果被那些注解标注了就将其加入到beanMap中
                     //将目标类本身作为键，目标类的实例作为值，放入到beanMap中
                     beanMap.put(clazz, ClassUtil.newInstance(clazz, true));
                 }

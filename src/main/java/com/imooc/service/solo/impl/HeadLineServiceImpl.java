@@ -13,8 +13,14 @@ import java.util.List;
 public class HeadLineServiceImpl implements HeadLineService {
     @Override
     public Result<Boolean> addHeadLine(HeadLine headLine) {
-        log.info("addHeadLine被执行啦");
-        return null;
+        log.info("addHeadLine被执行啦，lineName[{}], lineLink[{}], lineImg[{}], priority[{}]",
+                headLine.getLineName(), headLine.getLineLink(), headLine.getLineImg(), headLine.getPriority());
+
+        Result<Boolean> result = new Result<>();
+        result.setCode(200);
+        result.setMsg("请求成功啦");
+        result.setData(true);
+        return result;
     }
 
     @Override

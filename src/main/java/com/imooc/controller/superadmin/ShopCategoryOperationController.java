@@ -14,6 +14,7 @@ import java.util.List;
 public class ShopCategoryOperationController {
     @Autowired
     private ShopCategoryService shopCategoryService;
+
     public Result<Boolean> addShopCategory(HttpServletRequest req, HttpServletResponse resp){
         //TODO:参数校验以及请求参数转化
         return shopCategoryService.addShopCategory(new ShopCategory());

@@ -36,18 +36,18 @@ public class DependencyInjector {
             for(Field field : fields){
                 //3.找出被Autowired标记的成员变量
                 if(field.isAnnotationPresent(Autowired.class)){
-                    Autowired autowired = field.getAnnotation(Autowired.class);
-                    String autowiredValue = autowired.value();
+                    Autowired autowired = field.getAnnotation(Autowired.class); // 获得注解实例对象
+                    String autowiredValue = autowired.value(); // 看看注解里面写的是那一个类 需要将这个类的实例对象 注入到当前类中
                     //4.获取这些成员变量的类型
                     Class<?> fieldClass = field.getType();
                     //5.获取这些成员变量的类型在容器里对应的实例
-                    Object fieldValue = getFieldInstance(fieldClass, autowiredValue);
+                    Object fieldValue = getFieldInstance(fieldClass, autowiredValue); // 这是要被注入的类
                     if(fieldValue == null){
                         throw new RuntimeException("unable to inject relevant type，target fieldClass is:" + fieldClass.getName() + " autowiredValue is : " + autowiredValue);
                     } else {
                         //6.通过反射将对应的成员变量实例注入到成员变量所在类的实例里
                         Object targetBean =  beanContainer.getBean(clazz);
-                        ClassUtil.setField(field, targetBean, fieldValue, true);
+                        ClassUtil.setField(field, targetBean, fieldValue, true); // 通过反射爆破的形式进行注入
                     }
                 }
             }
@@ -71,6 +71,7 @@ public class DependencyInjector {
             }
         }
     }
+
     /**
      * 获取接口的实现类
      */

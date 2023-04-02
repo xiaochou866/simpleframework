@@ -9,18 +9,19 @@ import org.simpleframework.core.annotation.Controller;
 import java.lang.reflect.Method;
 
 @Slf4j
-@Aspect(value = Controller.class)
+//@Aspect(value = Controller.class)
+@Aspect(pointcut = "within(com.imooc.controller.superadmin.*)")
 @Order(10)
 public class ControllerInfoRecordAspect extends DefaultAspect {
     @Override
     public void before(Class<?> targetClass, Method method, Object[] args) throws Throwable {
-        log.info("开始计时,执行的类是[{}], 执行的方法是[{}], 参数是[{}]",
+        log.info("开始信息记录, 执行的类是[{}], 执行的方法是[{}], 参数是[{}]",
                 targetClass.getName(), method.getName(), args);
     }
 
     @Override
     public Object afterReturning(Class<?> targetClass, Method method, Object[] args, Object returnValue) {
-        log.info("结束计时,执行的类是[{}], 执行的方法是[{}], 参数是[{}], 返回值是[{}]",
+        log.info("结束信息记录, 执行的类是[{}], 执行的方法是[{}], 参数是[{}], 返回值是[{}]",
                 targetClass.getName(), method.getName(), args, returnValue);
         return  returnValue;
     }

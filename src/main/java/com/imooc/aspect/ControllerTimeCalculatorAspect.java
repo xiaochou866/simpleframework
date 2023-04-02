@@ -9,7 +9,8 @@ import org.simpleframework.core.annotation.Controller;
 import java.lang.reflect.Method;
 
 @Slf4j
-@Aspect(value = Controller.class)
+//@Aspect(value = Controller.class)
+@Aspect(pointcut = "execution(* com.imooc.controller.frontend..*.*(..))")
 @Order(0)
 public class ControllerTimeCalculatorAspect extends DefaultAspect {
     private long timestampCache;
@@ -24,7 +25,7 @@ public class ControllerTimeCalculatorAspect extends DefaultAspect {
     public Object afterReturning(Class<?> targetClass, Method method, Object[] args, Object returnValue) {
         long entTime = System.currentTimeMillis();
         long costTime = entTime - timestampCache;
-        log.info("结束计时,执行的类是[{}], 执行的方法是[{}], 参数是[{}], 返回值是[{}]时间为[{}]ms",
+        log.info("结束计时,执行的类是[{}], 执行的方法是[{}], 参数是[{}], 返回值是[{}], 时间为[{}]ms",
                 targetClass.getName(), method.getName(), args, returnValue, costTime);
         return returnValue;
     }

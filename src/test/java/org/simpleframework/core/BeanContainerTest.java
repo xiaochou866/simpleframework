@@ -1,6 +1,6 @@
 package org.simpleframework.core;
 
-import com.imooc.controller.DispatcherServlet;
+import org.simpleframework.mvc.DispatcherServlet;
 import com.imooc.controller.frontend.MainPageController;
 import com.imooc.service.solo.HeadLineService;
 import com.imooc.service.solo.impl.HeadLineServiceImpl;

@@ -11,8 +11,12 @@ import org.simpleframework.util.ValidationUtil;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
+/*
+    该类用于向一个目标类中 加入切面类 这里是通过cglib动态代理进行的实现
+ */
 public class AspectListExecutor implements MethodInterceptor {
     // 被代理的类
     private  Class<?> targetClass;
@@ -23,7 +27,7 @@ public class AspectListExecutor implements MethodInterceptor {
 
     public AspectListExecutor(Class<?> targetClass, List<AspectInfo> aspectInfoList){
         this.targetClass = targetClass;
-        this.sortedAspectInfoList = sortAspectInfoList(aspectInfoList);
+        this.sortedAspectInfoList = sortAspectInfoList(aspectInfoList); // 按照order从小到大进行排序
     }
 
     /**
@@ -45,7 +49,12 @@ public class AspectListExecutor implements MethodInterceptor {
     @Override
     public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         Object returnValue = null;
-        if(ValidationUtil.isEmpty(sortedAspectInfoList)){return returnValue;}
+        collectAccurateMatchedAspectList(method);
+        if(ValidationUtil.isEmpty(sortedAspectInfoList)){
+            returnValue = methodProxy.invokeSuper(proxy, args);
+            return returnValue;
+        }
+
         // 1.按照order的顺序执行完所有Aspect的before方法
         invokeBeforeAdvices(method, args);
         try{
@@ -58,6 +67,19 @@ public class AspectListExecutor implements MethodInterceptor {
             invokeAfterThrowingAdvices(method, args, e);
         }
         return returnValue;
+    }
+
+    private void collectAccurateMatchedAspectList(Method method) {
+        if(ValidationUtil.isEmpty(sortedAspectInfoList)){return;}
+        // java.util.ConcurrentModificationException for:mutex fail-fast sortedAspectInfoList.remove() Iterator.remove
+        // 考虑使用迭代器的方式进行遍历
+        Iterator<AspectInfo> it = sortedAspectInfoList.iterator();
+        while(it.hasNext()){
+            AspectInfo aspectInfo = it.next();
+            if(!aspectInfo.getPointcutLocator().accurateMatches(method)){ // 如果当前切面类与当前方法不匹配 则将当前的切面类删除
+                it.remove();
+            }
+        }
     }
 
     //4. 如果被代理方法抛出异常，则按照orer的顺序降序执行完所有Aspect的afterThrowing方法
